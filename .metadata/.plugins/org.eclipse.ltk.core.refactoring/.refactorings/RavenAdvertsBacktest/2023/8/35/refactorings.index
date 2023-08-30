@@ -1,0 +1,11 @@
+1693296547075	Rename package 'com.passionpursuit.config'
+1693296582301	Delete elements
+1693296747953	Rename package 'com.passionpursuit.filter'
+1693296763805	Rename package 'com.passionpursuit.init'
+1693296777612	Rename package 'com.passionpursuit.jwt'
+1693297408166	Rename package 'com.passionpursuit.security'
+1693298412537	Rename package 'com.passionpursuit.jwtutility'
+1693298486751	Delete element
+1693298510989	Rename type 'HobbieUserDetailsService'
+1693298533771	Rename type 'UserDetailsService'
+1693299651019	Delete elements

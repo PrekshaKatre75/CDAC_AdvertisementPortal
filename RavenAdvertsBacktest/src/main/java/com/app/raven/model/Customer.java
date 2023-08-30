@@ -1,0 +1,102 @@
+package com.app.raven.model;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+//import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Entity // This annotation tells the compiler that what follows is a part of the entity
+@Data // The lombok lib. provide Getters, Setters, Parameterised, parameterless
+		// constructor, hashcode equals and toString method
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@Table(name = "Customer") // table annotation overriding the name of table to add a suitable name in
+@JsonIgnoreType						// database
+public class Customer extends BaseEntity {
+	@Column(length = 50, nullable = false) // length of the email is fixed
+	private String email; // Email field not null is a necessary fields and is used to login
+
+	@Column(length = 16, nullable = false) // Password has a limit on the wordcount
+	private String password; // Password is a notnull fiels and is used to log in the user
+	
+	@Column(length=20)
+	private String Fname;
+	
+	@Column(length=20)
+	private String LName;
+
+	@Column(length = 14, nullable = false) // mobile number is a necessary field and has a limit of 14 characters
+	private String mobileNo; // Ex: +91-9525478562
+
+	@Column
+	private String address; // Address is the address of the company which the customer belong to.
+	@Column
+	private String role;
+
+	@Column
+	private LocalDate packageStartDate; // This field is updated when the package is bought
+
+	@Column
+	private LocalDate packageEndDate; // This field is updated when the package is bought and tells when the package
+										// will end, Calculated as packageStartDate + validity<<<<<<< HEAD
+
+	@ManyToOne(cascade = CascadeType.ALL) // The connection between the packages and customer Many to one as one
+											// customer will buy 1 package but package can have many customers
+
+	@JoinColumn(name = "package_id")
+	@ToString.Exclude // This will Exclude the toString method
+	private PackageDetails pack; // this will map to the package that the customer will purchase
+
+
+	@ToString.Exclude
+	@OneToMany(mappedBy = "ownerCust",fetch = FetchType.EAGER) // the product is mapped as one to many as 1 customer can advertise many
+										// products
+	private List<Product> prod = new ArrayList<Product>(); // List of the products the customer will advertise
+
+	@ToString.Exclude
+	@OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER) // the company with which the custome is affileated is mapped 1 to 1 as 1
+											// customer belong to 1 company
+	@JoinColumn(name = "company_id")
+	private Company compDet; // Details of the company are mapped here
+	
+	@ToString.Exclude
+	@OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+	@JoinColumn(name = "order_id") // ForigenKey of the bill table
+	private Bill orderDetails; // Details of the bill are mapped here in a One to One unidirectional relation 
+
+	/*
+	 * this is filling the emty list and update the relation
+	 */
+	public Customer assignProd(Product pro) {
+		this.prod.add(pro);
+		return this;
+	}
+
+	/*
+	 * This is a method to remove product from the list
+	 */
+	public Customer removeProd(Product pro) {
+		this.prod.remove(pro);
+		return this;
+	}
+
+	
+
+}

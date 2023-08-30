@@ -1,0 +1,52 @@
+package com.app.config;
+
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+import com.app.filter.JwtFilter;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+//    private final HobbieUserDetailsService hobbieUserDetailsService;
+//    private final PasswordEncoder passwordEncoder;
+//
+//    private final JwtFilter jwtFilter;
+//
+//    @Autowired
+//    public SecurityConfiguration(JwtFilter jwtFilter, HobbieUserDetailsService hobbieUserDetailsService, PasswordEncoder passwordEncoder) {
+//        this.hobbieUserDetailsService = hobbieUserDetailsService;
+//        this.jwtFilter = jwtFilter;
+//        this.passwordEncoder = passwordEncoder;
+//    }
+//
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(hobbieUserDetailsService);
+//    }
+//
+//
+//    @Override
+//    @Bean
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors();
+        http.csrf()
+                .disable()
+                .authorizeRequests()
+                .antMatchers("/register", "/signup", "/authenticate", "/notification", "/password", "/swagger-ui/index.html", "/v3/api-docs", "/configuration/ui", "/swagger-resources/**",
+                        "/configuration/security", "/swagger-ui/*", "/webjars/**", "/v3/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+    }
+}

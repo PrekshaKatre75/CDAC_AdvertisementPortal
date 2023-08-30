@@ -1,0 +1,43 @@
+package com.app.security;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+
+import com.app.raven.model.Customer;
+import com.app.raven.repository.CustomerRepository;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+public class HobbieUserDetailsService implements UserDetailsService {
+    private final CustomerRepository customerRepository;
+
+    public HobbieUserDetailsService(CustomerRepository userRepository) {
+        this.customerRepository = userRepository;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    	Customer userEntity = customerRepository.findByEmail(username).orElseThrow(
+                () -> new UsernameNotFoundException("User with username " + username + " was not found."));
+
+        return mapToUserDetails(userEntity);
+    }
+
+    private UserDetails mapToUserDetails(Customer userEntity) {
+
+        GrantedAuthority authorities = new SimpleGrantedAuthority("ROLE_" +userEntity.getRole()));
+        return new User(
+                userEntity.getEmail(),
+                userEntity.getPassword(),
+                (Collection<? extends GrantedAuthority>) authorities
+        );
+    }
+}

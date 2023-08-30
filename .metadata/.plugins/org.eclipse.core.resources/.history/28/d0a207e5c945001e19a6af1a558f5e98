@@ -1,0 +1,67 @@
+package com.app.raven.service;
+
+import java.util.List;
+
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Service;
+
+import com.app.raven.model.Product;
+import com.app.raven.repository.ProductRepository;
+
+@Service
+@Transactional
+public class ProductService implements ProductServicable {
+
+	private ProductRepository prodRepo; 
+
+	public ProductService(ProductRepository prodRepo) {
+		this.prodRepo = prodRepo;
+	}
+
+	@Override
+	public Product saveProduct(Product prod) {
+		System.out.println("Saving the product " + prod + "in the repo");
+		this.prodRepo.save(prod);
+		return prod;
+	}
+	
+
+	@Override
+	public List<Product> findAllProducts() {
+		System.out.println("Returning the list of the products fetched from the repo");
+		return this.prodRepo.findAll();
+	}
+
+	@Override
+	public Product findProductByID(Long id) {
+		System.out.println("Finding the product with the Id: " + id);
+		return this.prodRepo.findById(id).orElse(null);
+	}
+
+	@Override
+	public Product updateProduct(Product updateProd) {
+		Product prod = this.prodRepo.findById(updateProd.getId()).orElse(null);
+		if(prod != null) {
+			prod.setProductName(updateProd.getProductName());
+			prod.setProductDetails(updateProd.getProductDetails());
+			prod.setImage(updateProd.getImage());
+			this.prodRepo.save(prod);
+		}else {
+			System.out.println("The Product is not persistant");
+		}
+		
+		return prod;
+	}
+
+	@Override
+	public Product deleteProduct(Long id) {
+		Product toDel = this.prodRepo.findById(id).orElse(null);
+		if(toDel != null)
+			this.prodRepo.deleteById(id);
+		else
+			System.out.println("The product is not found in the repository.");
+		return toDel;
+	}
+
+}
